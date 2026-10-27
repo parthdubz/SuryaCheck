@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+*.bat text eol=crlf
+
+*.csv -text
+*.parquet binary
+*.joblib binary
+*.png binary
+*.jpg binary
+*.jpeg binary
