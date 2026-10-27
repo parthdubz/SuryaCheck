@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}SuryaCheck - {{ inverter_id }}{% endblock %}
+{% block content %}
+<script src="{% static 'core/plotly.min.js' %}"></script>
+
+<h1>Inverter {{ inverter_id }}</h1>
+{% if inverter %}
+<p>Plant: {{ inverter.plant.name }} | Peak power: {{ inverter.peak_power_kw|floatformat:1 }} kW</p>
+{% endif %}
+
+{% if chart_html %}
+{{ chart_html|safe }}
+{% else %}
+<p>No test-period data available for this inverter.</p>
+{% endif %}
+
+<h2>Alert history</h2>
+{% if alerts %}
+<table>
+    <thead>
+        <tr>
+            <th>Fault type</th>
+            <th>Start day</th>
+            <th>Detected day</th>
+            <th>Ratio</th>
+            <th>Rupees lost</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alert in alerts %}
+        <tr>
+            <td>{{ alert.fault_type }}</td>
+            <td>{{ alert.start_day }}</td>
+            <td>{{ alert.detected_day }}</td>
+            <td>{{ alert.ratio|floatformat:2 }}</td>
+            <td>&#8377;{{ alert.rupees_lost|floatformat:0 }}</td>
+            <td>{{ alert.status }}</td>
+            <td>{{ alert.created_at }}</td>
+            <td>
+                {% if alert.status == "open" %}
+                <form method="post" action="{% url 'dismiss_alert' alert.id %}">
+                    <textarea name="reason" placeholder="Why is this alert wrong?" rows="2"></textarea>
+                    <button type="submit">Dismiss</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No alerts recorded for this inverter yet.</p>
+{% endif %}
+{% endblock %}

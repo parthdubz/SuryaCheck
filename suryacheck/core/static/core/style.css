@@ -1,0 +1,143 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    background-color: #f7f7f7;
+    color: #222;
+}
+
+.top-nav {
+    background-color: #1f3b57;
+    color: white;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.nav-brand {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.top-nav nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 16px;
+}
+
+.top-nav nav a:hover {
+    text-decoration: underline;
+}
+
+.page-content {
+    max-width: 1000px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+h1 {
+    color: #1f3b57;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0 24px 0;
+    background-color: white;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+table thead th {
+    background-color: #e4e9ee;
+}
+
+form {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin-bottom: 24px;
+    max-width: 500px;
+}
+
+form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+form input, form select, form textarea {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    box-sizing: border-box;
+}
+
+form button {
+    margin-top: 14px;
+    padding: 8px 16px;
+    background-color: #1f3b57;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #2a4f74;
+}
+
+.tariff-form {
+    max-width: 500px;
+}
+
+.warning-banner {
+    background-color: #fff3cd;
+    border: 1px solid #f0c36d;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.error-banner {
+    background-color: #f8d7da;
+    border: 1px solid #f1aeb5;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.success-banner {
+    background-color: #d4edda;
+    border: 1px solid #a6d8af;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.info-banner {
+    background-color: #d9edf7;
+    border: 1px solid #9acfea;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.status-red {
+    color: #a30000;
+    font-weight: bold;
+}
+
+.status-orange {
+    color: #b06400;
+    font-weight: bold;
+}
+
+.status-green {
+    color: #1a7a1a;
+    font-weight: bold;
+}
+
+.note {
+    font-size: 13px;
+    color: #555;
+}

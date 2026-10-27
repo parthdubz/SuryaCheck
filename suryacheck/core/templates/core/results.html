@@ -1,0 +1,107 @@
+{% extends "core/base.html" %}
+{% block title %}SuryaCheck - Results{% endblock %}
+{% block content %}
+<h1>Results</h1>
+
+{% if not results %}
+<p class="warning-banner">
+    No results yet. Run <code>python manage.py evaluate</code> (or <code>run.bat</code>) first.
+</p>
+{% else %}
+
+<p class="info-banner">
+    All numbers above are measured directly by the code in <code>evaluate.py</code> on synthetic
+    faults - nothing here is hand-typed.
+</p>
+
+<h2>Model comparison (MAE / RMSE / MAE as % of peak power)</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>Test</th>
+            <th>Unseen inverters</th>
+            <th>Cross-plant</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% with mc=results.model_comparison %}
+        <tr>
+            <td>b0 (persistence)</td>
+            <td>{{ mc.b0.test.mae|floatformat:3 }} / {{ mc.b0.test.rmse|floatformat:3 }} / {{ mc.b0.test.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.b0.unseen_inverters.mae|floatformat:3 }} / {{ mc.b0.unseen_inverters.rmse|floatformat:3 }} / {{ mc.b0.unseen_inverters.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.b0.cross_plant.mae|floatformat:3 }} / {{ mc.b0.cross_plant.rmse|floatformat:3 }} / {{ mc.b0.cross_plant.mae_pct_of_peak|floatformat:1 }}%</td>
+        </tr>
+        <tr>
+            <td>b1 (irradiation linear)</td>
+            <td>{{ mc.b1.test.mae|floatformat:3 }} / {{ mc.b1.test.rmse|floatformat:3 }} / {{ mc.b1.test.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.b1.unseen_inverters.mae|floatformat:3 }} / {{ mc.b1.unseen_inverters.rmse|floatformat:3 }} / {{ mc.b1.unseen_inverters.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.b1.cross_plant.mae|floatformat:3 }} / {{ mc.b1.cross_plant.rmse|floatformat:3 }} / {{ mc.b1.cross_plant.mae_pct_of_peak|floatformat:1 }}%</td>
+        </tr>
+        <tr>
+            <td>b2 (+ temperature)</td>
+            <td>{{ mc.b2.test.mae|floatformat:3 }} / {{ mc.b2.test.rmse|floatformat:3 }} / {{ mc.b2.test.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.b2.unseen_inverters.mae|floatformat:3 }} / {{ mc.b2.unseen_inverters.rmse|floatformat:3 }} / {{ mc.b2.unseen_inverters.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.b2.cross_plant.mae|floatformat:3 }} / {{ mc.b2.cross_plant.rmse|floatformat:3 }} / {{ mc.b2.cross_plant.mae_pct_of_peak|floatformat:1 }}%</td>
+        </tr>
+        <tr>
+            <td>m1 (LightGBM)</td>
+            <td>{{ mc.m1.test.mae|floatformat:3 }} / {{ mc.m1.test.rmse|floatformat:3 }} / {{ mc.m1.test.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.m1.unseen_inverters.mae|floatformat:3 }} / {{ mc.m1.unseen_inverters.rmse|floatformat:3 }} / {{ mc.m1.unseen_inverters.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.m1.cross_plant.mae|floatformat:3 }} / {{ mc.m1.cross_plant.rmse|floatformat:3 }} / {{ mc.m1.cross_plant.mae_pct_of_peak|floatformat:1 }}%</td>
+        </tr>
+        <tr>
+            <td>m1_cal (LightGBM + calibration)</td>
+            <td>{{ mc.m1_cal.test.mae|floatformat:3 }} / {{ mc.m1_cal.test.rmse|floatformat:3 }} / {{ mc.m1_cal.test.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.m1_cal.unseen_inverters.mae|floatformat:3 }} / {{ mc.m1_cal.unseen_inverters.rmse|floatformat:3 }} / {{ mc.m1_cal.unseen_inverters.mae_pct_of_peak|floatformat:1 }}%</td>
+            <td>{{ mc.m1_cal.cross_plant.mae|floatformat:3 }} / {{ mc.m1_cal.cross_plant.rmse|floatformat:3 }} / {{ mc.m1_cal.cross_plant.mae_pct_of_peak|floatformat:1 }}%</td>
+        </tr>
+        {% endwith %}
+    </tbody>
+</table>
+<p class="note">{{ results.cross_plant_note }}</p>
+
+<h2>Fault detection (N consecutive days = {{ results.detection.n_consecutive_days }}, ratio threshold = {{ results.detection.ratio_threshold }})</h2>
+<table>
+    <thead>
+        <tr><th>Split</th><th>Precision</th><th>Recall</th><th>False alarms / 100 inverter-days</th><th>Median days to detect</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Validation</td>
+            <td>{{ results.detection.validation.precision|floatformat:2 }}</td>
+            <td>{{ results.detection.validation.recall|floatformat:2 }}</td>
+            <td>{{ results.detection.validation.false_alarms_per_100_inverter_days|floatformat:2 }}</td>
+            <td>{{ results.detection.validation.median_days_to_detect|default:"-" }}</td>
+        </tr>
+        <tr>
+            <td>Test</td>
+            <td>{{ results.detection.test.precision|floatformat:2 }}</td>
+            <td>{{ results.detection.test.recall|floatformat:2 }}</td>
+            <td>{{ results.detection.test.false_alarms_per_100_inverter_days|floatformat:2 }}</td>
+            <td>{{ results.detection.test.median_days_to_detect|default:"-" }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Cause classifier confusion matrix (accuracy {{ results.cause_classifier.accuracy|floatformat:2 }})</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Actual \ Predicted</th>
+            {% for label in results.cause_classifier.labels %}<th>{{ label }}</th>{% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for label, row in cm_rows %}
+        <tr>
+            <th>{{ label }}</th>
+            {% for value in row %}<td>{{ value }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p>Generated at: {{ results.generated_at }}</p>
+{% endif %}
+{% endblock %}

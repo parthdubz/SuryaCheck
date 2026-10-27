@@ -1,0 +1,60 @@
+{% extends "core/base.html" %}
+{% block title %}SuryaCheck - Fleet Dashboard{% endblock %}
+{% block content %}
+<h1>Fleet Dashboard</h1>
+
+{% if ran %}
+<p class="success-banner">Batch run finished. Alerts below are up to date.</p>
+{% endif %}
+
+{% if not artifacts_ready %}
+<p class="warning-banner">
+    The ML pipeline has not been trained yet. Run <code>run.bat</code> from the project folder first.
+</p>
+{% endif %}
+
+<form method="get" class="tariff-form">
+    <label for="tariff">Assumption: default &#8377;{{ default_tariff }}/kWh - edit to recompute</label>
+    <input type="number" id="tariff" name="tariff" step="0.5" value="{{ tariff }}">
+    <button type="submit">Recompute</button>
+</form>
+
+{% if alerts %}
+<table>
+    <thead>
+        <tr>
+            <th>Inverter</th>
+            <th>Plant</th>
+            <th>Likely cause</th>
+            <th>Ratio</th>
+            <th>Rupees lost</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alert in alerts %}
+        <tr>
+            <td>{{ alert.inverter.inverter_id }}</td>
+            <td>{{ alert.inverter.plant.name }}</td>
+            <td>{{ alert.likely_cause|default:alert.fault_type }}</td>
+            <td>{{ alert.ratio|floatformat:2 }}</td>
+            <td>&#8377;{{ alert.display_rupees_lost|floatformat:0 }}</td>
+            <td>
+                {% if alert.ratio < 0.7 %}
+                <span class="status-red">critical</span>
+                {% elif alert.ratio < 0.9 %}
+                <span class="status-orange">warning</span>
+                {% else %}
+                <span class="status-green">ok</span>
+                {% endif %}
+            </td>
+            <td><a href="{% url 'inverter_detail' alert.inverter.inverter_id %}">view</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No open alerts right now.</p>
+{% endif %}
+{% endblock %}

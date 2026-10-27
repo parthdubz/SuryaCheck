@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+{% block title %}SuryaCheck - Home{% endblock %}
+{% block content %}
+<h1>SuryaCheck</h1>
+<p>
+    SuryaCheck watches a solar plant's inverters and compares how much power they actually
+    produced against how much they were expected to produce, given the weather that day.
+    When an inverter falls behind for several days in a row, it gets flagged as a likely
+    fault, with an estimate of the energy and rupees lost.
+</p>
+
+{% if not artifacts_ready %}
+<p class="warning-banner">
+    The ML pipeline has not been trained yet. From the project folder, run
+    <code>run.bat</code> (or <code>python manage.py prepare_data</code>,
+    then <code>train_models</code>, then <code>evaluate</code>) before uploading data.
+</p>
+{% endif %}
+
+<h2>Run the batch pipeline on new data</h2>
+<form method="post" action="{% url 'run_batch' %}" enctype="multipart/form-data">
+    <label for="plant_id">Plant ID</label>
+    <input type="text" id="plant_id" name="plant_id" placeholder="e.g. 4135001" required>
+
+    <label for="generation_csv">Generation data CSV</label>
+    <input type="file" id="generation_csv" name="generation_csv" accept=".csv" required>
+
+    <label for="weather_csv">Weather sensor data CSV</label>
+    <input type="file" id="weather_csv" name="weather_csv" accept=".csv" required>
+
+    <button type="submit">Run batch pipeline</button>
+</form>
+
+<h2>Recent model runs</h2>
+{% if recent_runs %}
+<table>
+    <thead><tr><th>Name</th><th>Created at</th></tr></thead>
+    <tbody>
+        {% for run in recent_runs %}
+        <tr><td>{{ run.name }}</td><td>{{ run.created_at }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No model runs yet.</p>
+{% endif %}
+{% endblock %}

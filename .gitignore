@@ -1,0 +1,32 @@
+# scratch dataset-exploration files from before the SuryaCheck project existed
+/download_dataset.py
+/solar-energy-power-generation-dataset/
+/solar-power-generation-data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# virtual environment
+suryacheck/.venv/
+
+# Django runtime/local state
+suryacheck/db.sqlite3
+suryacheck/staticfiles/
+
+# raw Kaggle CSVs (academic-use-only license, not meant for redistribution;
+# see README for where to download them locally)
+suryacheck/data/*.csv
+
+# generated ML artifacts (reproducible via run.bat / retrain.bat)
+suryacheck/artifacts/*
+!suryacheck/artifacts/.gitkeep
+
+# local Claude Code tooling config, not part of the project
+/.claude/
+
+# editor/OS cruft
+.DS_Store
+Thumbs.db
+*.log

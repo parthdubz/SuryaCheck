@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+{% block title %}SuryaCheck - Limits{% endblock %}
+{% block content %}
+<h1>Limits of this prototype</h1>
+<ul>
+    <li>Only 34 days of data are available in total, so the model has not seen a full year of seasons.</li>
+    <li>Only two plants are included, and each plant has a single on-site weather sensor, so
+        weather (irradiation, temperature) is shared across every inverter at a plant, not
+        measured per inverter.</li>
+    <li>All faults shown anywhere in this app (evaluation metrics, Break It Live) are
+        synthetically injected. There is no ground-truth labeling of real-world faults in this
+        dataset.</li>
+    <li>Dataset license: &copy; Original Authors, academic use only.</li>
+</ul>
+{% endblock %}

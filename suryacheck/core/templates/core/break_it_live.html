@@ -1,0 +1,60 @@
+{% extends "core/base.html" %}
+{% block title %}SuryaCheck - Break It Live{% endblock %}
+{% block content %}
+<h1>Break It Live</h1>
+<p>
+    Pick a real inverter from the test period, inject a synthetic fault into a copy of its
+    data (nothing is saved to the database), and see whether the fault detector catches it.
+    This reuses the exact same <code>inject.py</code> and <code>detect.py</code> code path
+    that <code>evaluate.py</code> uses offline to score the model.
+</p>
+
+{% if error_message %}
+<p class="error-banner">{{ error_message }}</p>
+{% endif %}
+
+<form method="post">
+    <label for="inverter_id">Inverter</label>
+    <select id="inverter_id" name="inverter_id" required>
+        {% for inv in inverters %}
+        <option value="{{ inv.inverter_id }}">{{ inv.inverter_id }} ({{ inv.plant.name }})</option>
+        {% endfor %}
+    </select>
+
+    <label for="fault_type">Fault type</label>
+    <select id="fault_type" name="fault_type" required>
+        {% for ft in fault_types %}
+        <option value="{{ ft }}">{{ ft }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="start_day">Start day ({{ test_days.0 }} to {{ test_days.1 }})</label>
+    <input type="number" id="start_day" name="start_day" min="{{ test_days.0 }}" max="{{ test_days.1 }}" value="{{ test_days.0 }}" required>
+
+    <button type="submit">Inject fault and check detection</button>
+</form>
+
+{% if ran %}
+<h2>Result</h2>
+<table>
+    <tbody>
+        <tr><th>Inverter</th><td>{{ inverter_id }}</td></tr>
+        <tr><th>Fault type injected</th><td>{{ fault_type }}</td></tr>
+        <tr><th>Start day</th><td>{{ start_day }}</td></tr>
+        <tr>
+            <th>Caught by detector?</th>
+            <td>
+                {% if caught %}
+                <span class="status-green">Yes, on day {{ detected_day }} ({{ days_to_detect }} days after the fault started)</span>
+                {% else %}
+                <span class="status-red">No, not caught within the test period</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr><th>Energy deficit so far</th><td>{{ deficit_kwh|floatformat:1 }} kWh</td></tr>
+        <tr><th>Estimated rupees lost</th><td>&#8377;{{ rupees_lost|floatformat:0 }}</td></tr>
+        <tr><th>Rank if added to the fleet dashboard</th><td>{{ new_rank }} of {{ fleet_size }} open alerts</td></tr>
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

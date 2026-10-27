@@ -1,0 +1,7 @@
+{% extends "core/base.html" %}
+{% block title %}SuryaCheck - Error{% endblock %}
+{% block content %}
+<h1>Something went wrong</h1>
+<p class="error-banner">{{ error_message }}</p>
+<p><a href="{% url 'home' %}">Back to home</a></p>
+{% endblock %}
