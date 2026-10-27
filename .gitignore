@@ -15,10 +15,6 @@ suryacheck/.venv/
 suryacheck/db.sqlite3
 suryacheck/staticfiles/
 
-# raw Kaggle CSVs (academic-use-only license, not meant for redistribution;
-# see README for where to download them locally)
-suryacheck/data/*.csv
-
 # generated ML artifacts (reproducible via run.bat / retrain.bat)
 suryacheck/artifacts/*
 !suryacheck/artifacts/.gitkeep
