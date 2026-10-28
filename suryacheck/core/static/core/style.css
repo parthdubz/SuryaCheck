@@ -17,6 +17,9 @@ body {
 .nav-brand {
     font-weight: bold;
     font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .top-nav nav a {

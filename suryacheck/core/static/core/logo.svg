@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SuryaCheck logo">
+<title>SuryaCheck logo</title>
+<desc>A stylized sun with seven gold rays and one shorter, dimmed gray ray, with a dark checkmark stamped over the core pointing toward the dimmed ray.</desc>
+<polygon points="63.83,47.81 63.83,52.19 86,50" fill="#F2A623"/>
+<polygon points="61.33,58.23 58.23,61.33 75.46,75.46" fill="#F2A623"/>
+<polygon points="52.19,63.83 47.81,63.83 50,86" fill="#F2A623"/>
+<polygon points="41.77,61.33 38.67,58.23 24.54,75.46" fill="#F2A623"/>
+<polygon points="36.17,52.19 36.17,47.81 14,50" fill="#F2A623"/>
+<polygon points="38.67,41.77 41.77,38.67 24.54,24.54" fill="#F2A623"/>
+<polygon points="47.81,36.17 52.19,36.17 50,14" fill="#F2A623"/>
+<polygon points="58.23,38.67 61.33,41.77 64.14,35.86" fill="#9C9C94"/>
+<circle cx="50" cy="50" r="14" fill="#F2A623"/>
+<path d="M36,50 L46,60 L66,36" fill="none" stroke="#262524" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

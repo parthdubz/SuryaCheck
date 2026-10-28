@@ -8,7 +8,10 @@
 </head>
 <body>
     <header class="top-nav">
-        <div class="nav-brand">SuryaCheck</div>
+        <div class="nav-brand">
+            <img src="{% static 'core/logo.svg' %}" alt="SuryaCheck logo" width="28" height="28">
+            SuryaCheck
+        </div>
         <nav>
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'fleet_dashboard' %}">Fleet Dashboard</a>
