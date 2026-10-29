@@ -77,9 +77,10 @@ def _build_uploaded_dataframe(gen_path, weather_path, plant_id):
 
 def _get_or_create_inverter(plant_id, source_key, inverter_id):
     plant, _ = Plant.objects.get_or_create(plant_id=str(plant_id), defaults={"name": str(plant_id)})
+    next_number = plant.inverters.count() + 1
     inverter, _ = Inverter.objects.get_or_create(
         inverter_id=inverter_id,
-        defaults={"plant": plant, "source_key": str(source_key)},
+        defaults={"plant": plant, "source_key": str(source_key), "display_number": next_number},
     )
     return inverter
 
@@ -233,6 +234,9 @@ def inverter_detail(request, inverter_id):
     test_df = subset[subset["SPLIT"] == "test"].sort_values("DATE_TIME")
     val_df = subset[subset["SPLIT"] == "val"]
 
+    inverter = Inverter.objects.filter(inverter_id=inverter_id).select_related("plant").first()
+    chart_title = inverter.display_name if inverter else inverter_id
+
     art = registry.load_artifacts()
     chart_html = None
     if len(test_df) > 0:
@@ -260,12 +264,11 @@ def inverter_detail(request, inverter_id):
         fig.add_trace(go.Scatter(x=test_df["DATE_TIME"], y=pred_test, name="expected (M1+cal)", line=dict(color="orange")))
         fig.add_trace(go.Scatter(x=test_df["DATE_TIME"], y=test_df["AC_POWER"], name="actual AC power", line=dict(color="blue")))
         fig.update_layout(
-            title=f"{inverter_id} - test period (day {settings.TEST_DAYS[0]} to {settings.TEST_DAYS[1]})",
+            title=f"{chart_title} - test period (day {settings.TEST_DAYS[0]} to {settings.TEST_DAYS[1]})",
             xaxis_title="Time", yaxis_title="AC power (kW)", height=450,
         )
         chart_html = fig.to_html(full_html=False, include_plotlyjs=False, div_id="chart")
 
-    inverter = Inverter.objects.filter(inverter_id=inverter_id).select_related("plant").first()
     alerts = Alert.objects.filter(inverter__inverter_id=inverter_id).order_by("-created_at") if inverter else []
 
     context = {
@@ -347,12 +350,16 @@ def break_it_live(request):
     existing_losses.sort(reverse=True)
     new_rank = existing_losses.index(rupees_lost) + 1
 
+    picked_inverter = Inverter.objects.filter(inverter_id=inverter_id).select_related("plant").first()
+    inverter_name = picked_inverter.display_name if picked_inverter else inverter_id
+
     context = {
         "inverters": inverters,
         "fault_types": inject.FAULT_TYPES,
         "test_days": settings.TEST_DAYS,
         "ran": True,
         "inverter_id": inverter_id,
+        "inverter_name": inverter_name,
         "fault_type": fault_type,
         "start_day": start_day,
         "caught": caught,

@@ -17,7 +17,7 @@
     <label for="inverter_id">Inverter</label>
     <select id="inverter_id" name="inverter_id" required>
         {% for inv in inverters %}
-        <option value="{{ inv.inverter_id }}">{{ inv.inverter_id }} ({{ inv.plant.name }})</option>
+        <option value="{{ inv.inverter_id }}">{{ inv.display_name }}</option>
         {% endfor %}
     </select>
 
@@ -38,7 +38,7 @@
 <h2>Result</h2>
 <table>
     <tbody>
-        <tr><th>Inverter</th><td>{{ inverter_id }}</td></tr>
+        <tr><th>Inverter</th><td>{{ inverter_name }}</td></tr>
         <tr><th>Fault type injected</th><td>{{ fault_type }}</td></tr>
         <tr><th>Start day</th><td>{{ start_day }}</td></tr>
         <tr>

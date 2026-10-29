@@ -61,7 +61,7 @@
         <form class="finder-form" onsubmit="return false;">
             <select id="inverter-picker">
                 {% for inv in inverters %}
-                <option value="{{ inv.inverter_id }}">{{ inv.inverter_id }} ({{ inv.plant.name }})</option>
+                <option value="{{ inv.inverter_id }}">{{ inv.display_name }}</option>
                 {% endfor %}
             </select>
             <a class="cta-button" id="inverter-picker-go" href="#">Check my inverter</a>

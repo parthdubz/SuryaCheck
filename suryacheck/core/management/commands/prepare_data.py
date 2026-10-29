@@ -58,12 +58,17 @@ class Command(BaseCommand):
 
         inverters = {}
         inv_info = df.drop_duplicates("INVERTER_ID")[["INVERTER_ID", "PLANT_ID", "SOURCE_KEY"]]
+        inv_info = inv_info.sort_values(["PLANT_ID", "INVERTER_ID"])
+        display_numbers = {}
         for _, row in inv_info.iterrows():
             inverter_id = row["INVERTER_ID"]
+            plant_id = str(row["PLANT_ID"])
+            display_numbers[plant_id] = display_numbers.get(plant_id, 0) + 1
             inverters[inverter_id] = Inverter.objects.create(
-                plant=plants[str(row["PLANT_ID"])],
+                plant=plants[plant_id],
                 source_key=row["SOURCE_KEY"],
                 inverter_id=inverter_id,
+                display_number=display_numbers[plant_id],
                 peak_power_kw=peak_power.get(inverter_id),
                 is_unseen_in_training=inverter_id in set(unseen_ids),
             )

@@ -13,8 +13,17 @@ class Inverter(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name="inverters")
     source_key = models.CharField(max_length=64)
     inverter_id = models.CharField(max_length=96, unique=True)
+    display_number = models.PositiveIntegerField(default=1)
     peak_power_kw = models.FloatField(null=True, blank=True)
     is_unseen_in_training = models.BooleanField(default=False)
+
+    @property
+    def short_name(self):
+        return f"Inverter {self.display_number:02d}"
+
+    @property
+    def display_name(self):
+        return f"{self.plant.name} - {self.short_name}"
 
     def __str__(self):
         return self.inverter_id

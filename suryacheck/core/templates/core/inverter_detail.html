@@ -4,9 +4,12 @@
 {% block content %}
 <script src="{% static 'core/plotly.min.js' %}"></script>
 
-<h1>Inverter {{ inverter_id }}</h1>
 {% if inverter %}
-<p>Plant: {{ inverter.plant.name }} | Peak power: {{ inverter.peak_power_kw|floatformat:1 }} kW</p>
+<h1>{{ inverter.display_name }}</h1>
+<p>Peak power: {{ inverter.peak_power_kw|floatformat:1 }} kW
+   <span class="note">(hardware ID: {{ inverter.inverter_id }})</span></p>
+{% else %}
+<h1>Inverter {{ inverter_id }}</h1>
 {% endif %}
 
 {% if chart_html %}

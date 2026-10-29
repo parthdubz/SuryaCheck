@@ -50,7 +50,7 @@
     <tbody>
         {% for alert in alerts %}
         <tr>
-            <td>{{ alert.inverter.inverter_id }}</td>
+            <td>{{ alert.inverter.short_name }}</td>
             <td>{{ alert.inverter.plant.name }}</td>
             <td>{{ alert.likely_cause|default:alert.fault_type }}</td>
             <td>{{ alert.ratio|floatformat:2 }}</td>
