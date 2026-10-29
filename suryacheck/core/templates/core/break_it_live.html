@@ -2,11 +2,11 @@
 {% block title %}SuryaCheck - Break It Live{% endblock %}
 {% block content %}
 <h1>Break It Live</h1>
-<p>
-    Pick a real inverter from the test period, inject a synthetic fault into a copy of its
-    data (nothing is saved to the database), and see whether the fault detector catches it.
-    This reuses the exact same <code>inject.py</code> and <code>detect.py</code> code path
-    that <code>evaluate.py</code> uses offline to score the model.
+<p class="strap-line">
+    A safe sandbox - nothing here touches your real data. Pick a healthy inverter, inject a
+    fake fault, and watch whether SuryaCheck actually catches it and how fast. This runs the
+    exact same detection code used to grade our real evaluation results, so what you see here
+    is a fair demo of what it would really do.
 </p>
 
 {% if error_message %}

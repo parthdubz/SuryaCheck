@@ -86,7 +86,14 @@ def _get_or_create_inverter(plant_id, source_key, inverter_id):
 
 def home(request):
     recent_runs = ModelRun.objects.order_by("-created_at")[:10]
-    context = {"recent_runs": recent_runs, "artifacts_ready": registry.artifacts_ready()}
+    inverters = Inverter.objects.select_related("plant").order_by("inverter_id")
+    open_alert_count = Alert.objects.filter(status="open").count()
+    context = {
+        "recent_runs": recent_runs,
+        "artifacts_ready": registry.artifacts_ready(),
+        "inverters": inverters,
+        "open_alert_count": open_alert_count,
+    }
     return render(request, "core/home.html", context)
 
 

@@ -2,6 +2,11 @@
 {% block title %}SuryaCheck - Results{% endblock %}
 {% block content %}
 <h1>Results</h1>
+<p class="strap-line">
+    These are the real, measured numbers behind SuryaCheck - not marketing claims. Every
+    number below is computed directly by the evaluation code, including the ones that
+    aren't flattering.
+</p>
 
 {% if not results %}
 <p class="warning-banner">
@@ -101,6 +106,32 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% if results.ablation_rule_based_vs_ml %}
+<h2>ML vs. a rule-based baseline (same injected faults, independently tuned)</h2>
+<p class="note">{{ results.ablation_rule_based_vs_ml.description }}</p>
+<table>
+    <thead>
+        <tr><th>Approach</th><th>Test precision</th><th>Test recall</th><th>False alarms / 100 inverter-days</th></tr>
+    </thead>
+    <tbody>
+        {% with rb=results.ablation_rule_based_vs_ml.rule_based_b2 ml=results.ablation_rule_based_vs_ml.ml_m1_cal %}
+        <tr>
+            <td>Rule-based (B2, patent-style)</td>
+            <td>{{ rb.test.precision|floatformat:3 }}</td>
+            <td>{{ rb.test.recall|floatformat:3 }}</td>
+            <td>{{ rb.test.false_alarms_per_100_inverter_days|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <td>Tuned ML (M1+cal)</td>
+            <td>{{ ml.test.precision|floatformat:3 }}</td>
+            <td>{{ ml.test.recall|floatformat:3 }}</td>
+            <td>{{ ml.test.false_alarms_per_100_inverter_days|floatformat:2 }}</td>
+        </tr>
+        {% endwith %}
+    </tbody>
+</table>
+{% endif %}
 
 <p>Generated at: {{ results.generated_at }}</p>
 {% endif %}

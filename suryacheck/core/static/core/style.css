@@ -6,7 +6,7 @@ body {
 }
 
 .top-nav {
-    background-color: #1f3b57;
+    background-color: #16233E;
     color: white;
     padding: 12px 24px;
     display: flex;
@@ -39,7 +39,174 @@ body {
 }
 
 h1 {
-    color: #1f3b57;
+    color: #16233E;
+}
+
+.strap-line {
+    font-size: 15px;
+    color: #555;
+    max-width: 700px;
+    margin-top: -6px;
+}
+
+.hero {
+    text-align: center;
+    padding: 32px 16px 24px;
+}
+
+.hero h1 {
+    font-size: 34px;
+    margin-bottom: 4px;
+}
+
+.hero .tagline {
+    font-size: 18px;
+    color: #16233E;
+    font-weight: bold;
+    margin: 4px 0 10px;
+}
+
+.hero p {
+    max-width: 640px;
+    margin: 0 auto;
+    color: #444;
+}
+
+.how-it-works {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 24px 0 32px;
+}
+
+.how-it-works .step {
+    flex: 1;
+    min-width: 200px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 18px;
+}
+
+.how-it-works .step .step-number {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    background: #F2A623;
+    color: #16233E;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.how-it-works .step h3 {
+    margin: 4px 0;
+    font-size: 16px;
+}
+
+.how-it-works .step p {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+}
+
+.persona-cards {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 24px 0 32px;
+}
+
+.persona-card {
+    flex: 1;
+    min-width: 260px;
+    background: #16233E;
+    color: white;
+    border-radius: 8px;
+    padding: 22px;
+}
+
+.persona-card h3 {
+    margin: 0 0 6px;
+    color: #F2A623;
+}
+
+.persona-card p {
+    font-size: 14px;
+    color: #cfd6e4;
+    margin: 0 0 14px;
+}
+
+.persona-card a.cta-button, a.cta-button {
+    display: inline-block;
+    background: #F2A623;
+    color: #16233E;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 9px 18px;
+    border-radius: 6px;
+}
+
+.persona-card a.cta-button:hover, a.cta-button:hover {
+    background: #d98f1a;
+}
+
+.finder-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.finder-form select {
+    padding: 8px;
+    min-width: 240px;
+}
+
+.section-divider {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 32px 0;
+}
+
+.advanced-section summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #16233E;
+    margin: 24px 0 8px;
+}
+
+.help {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ccc;
+    color: #333;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 15px;
+    cursor: help;
+    margin-left: 4px;
+    position: relative;
+}
+
+.help:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 20px;
+    top: -6px;
+    background: #16233E;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    width: 220px;
+    white-space: normal;
+    z-index: 10;
 }
 
 table {
@@ -83,14 +250,15 @@ form input, form select, form textarea {
 form button {
     margin-top: 14px;
     padding: 8px 16px;
-    background-color: #1f3b57;
+    background-color: #16233E;
     color: white;
     border: none;
+    border-radius: 4px;
     cursor: pointer;
 }
 
 form button:hover {
-    background-color: #2a4f74;
+    background-color: #253a63;
 }
 
 .tariff-form {

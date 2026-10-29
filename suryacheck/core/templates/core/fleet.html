@@ -2,6 +2,10 @@
 {% block title %}SuryaCheck - Fleet Dashboard{% endblock %}
 {% block content %}
 <h1>Fleet Dashboard</h1>
+<p class="strap-line">
+    Your ranked to-do list for today - the inverter losing you the most money is at the top.
+    Nothing here needs interpreting; just work down the list.
+</p>
 
 {% if ran %}
 <p class="success-banner">Batch run finished. Alerts below are up to date.</p>
@@ -32,8 +36,12 @@
         <tr>
             <th>Inverter</th>
             <th>Plant</th>
-            <th>Likely cause</th>
-            <th>Ratio</th>
+            <th>Likely cause
+                <span class="help" data-tip="Our best guess at why it's underperforming, based on the shape of the drop: steady decline = dust, sudden drop = a fault, total loss = an outage.">?</span>
+            </th>
+            <th>Ratio
+                <span class="help" data-tip="Actual power produced divided by what we expected, today. 1.00 = performing exactly as expected. Lower is worse.">?</span>
+            </th>
             <th>Rupees lost</th>
             <th>Status</th>
             <th></th>
@@ -62,6 +70,9 @@
     </tbody>
 </table>
 {% else %}
-<p>No open alerts right now.</p>
+<p class="success-banner">
+    Nothing flagged right now - your fleet is either healthy, or you haven't run a batch
+    check yet. Try "Advanced: upload new plant data" from the Home page.
+</p>
 {% endif %}
 {% endblock %}

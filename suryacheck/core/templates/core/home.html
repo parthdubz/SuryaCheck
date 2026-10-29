@@ -1,47 +1,120 @@
 {% extends "core/base.html" %}
 {% block title %}SuryaCheck - Home{% endblock %}
 {% block content %}
-<h1>SuryaCheck</h1>
-<p>
-    SuryaCheck watches a solar plant's inverters and compares how much power they actually
-    produced against how much they were expected to produce, given the weather that day.
-    When an inverter falls behind for several days in a row, it gets flagged as a likely
-    fault, with an estimate of the energy and rupees lost.
-</p>
+
+<div class="hero">
+    <h1>SuryaCheck</h1>
+    <p class="tagline">Know which solar inverter is losing you money - before you climb the roof.</p>
+    <p>
+        SuryaCheck watches every inverter in a plant and compares what it actually produced
+        against what it should have produced, given that day's sunlight and heat. When one
+        falls behind for several days in a row, you get a ranked list of who to visit first,
+        a plain-language guess at why, and what it's costing you in rupees.
+    </p>
+</div>
 
 {% if not artifacts_ready %}
 <p class="warning-banner">
-    The ML pipeline has not been trained yet. From the project folder, run
-    <code>run.bat</code> (or <code>python manage.py prepare_data</code>,
-    then <code>train_models</code>, then <code>evaluate</code>) before uploading data.
+    SuryaCheck hasn't finished its first training run yet. From the project folder, run
+    <code>run.bat</code> and come back here once it's done - this takes a few minutes the
+    first time only.
 </p>
-{% endif %}
-
-<h2>Run the batch pipeline on new data</h2>
-<form method="post" action="{% url 'run_batch' %}" enctype="multipart/form-data">
-    <label for="plant_id">Plant ID</label>
-    <input type="text" id="plant_id" name="plant_id" placeholder="e.g. 4135001" required>
-
-    <label for="generation_csv">Generation data CSV</label>
-    <input type="file" id="generation_csv" name="generation_csv" accept=".csv" required>
-
-    <label for="weather_csv">Weather sensor data CSV</label>
-    <input type="file" id="weather_csv" name="weather_csv" accept=".csv" required>
-
-    <button type="submit">Run batch pipeline</button>
-</form>
-
-<h2>Recent model runs</h2>
-{% if recent_runs %}
-<table>
-    <thead><tr><th>Name</th><th>Created at</th></tr></thead>
-    <tbody>
-        {% for run in recent_runs %}
-        <tr><td>{{ run.name }}</td><td>{{ run.created_at }}</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
 {% else %}
-<p>No model runs yet.</p>
+
+<h2>How it works</h2>
+<div class="how-it-works">
+    <div class="step">
+        <span class="step-number">1</span>
+        <h3>We measure</h3>
+        <p>Every inverter's actual power output is compared against what it should produce,
+           given the sunlight and temperature that day.</p>
+    </div>
+    <div class="step">
+        <span class="step-number">2</span>
+        <h3>We flag</h3>
+        <p>An inverter that keeps underperforming gets flagged, with a plain-language guess
+           at why: dust, a sudden fault, or an outage.</p>
+    </div>
+    <div class="step">
+        <span class="step-number">3</span>
+        <h3>You act</h3>
+        <p>See a ranked worklist of who's losing you the most money, so you know exactly
+           which site to visit first.</p>
+    </div>
+</div>
+
+<div class="persona-cards">
+    <div class="persona-card">
+        <h3>I'm a technician</h3>
+        <p>
+            See every flagged inverter across your fleet, ranked by estimated rupees lost,
+            so you always know which site to visit next.
+            {% if open_alert_count %}{{ open_alert_count }} flagged right now.{% endif %}
+        </p>
+        <a class="cta-button" href="{% url 'fleet_dashboard' %}">Open the fleet dashboard</a>
+    </div>
+    <div class="persona-card">
+        <h3>I'm a plant owner</h3>
+        <p>Check a single inverter's health: how it's performing against expectation, and
+           whether anything's been flagged.</p>
+        {% if inverters %}
+        <form class="finder-form" onsubmit="return false;">
+            <select id="inverter-picker">
+                {% for inv in inverters %}
+                <option value="{{ inv.inverter_id }}">{{ inv.inverter_id }} ({{ inv.plant.name }})</option>
+                {% endfor %}
+            </select>
+            <a class="cta-button" id="inverter-picker-go" href="#">Check my inverter</a>
+        </form>
+        <script>
+            document.getElementById('inverter-picker-go').addEventListener('click', function (e) {
+                e.preventDefault();
+                var id = document.getElementById('inverter-picker').value;
+                window.location.href = '/inverter/' + encodeURIComponent(id) + '/';
+            });
+        </script>
+        {% else %}
+        <p class="note">No inverters loaded yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<hr class="section-divider">
+
 {% endif %}
+
+<details class="advanced-section">
+    <summary>Advanced: upload new plant data (technician/admin)</summary>
+    <p class="strap-line">
+        Bulk-upload a new generation + weather CSV pair for a plant. SuryaCheck will predict
+        expected output, flag underperforming inverters, and add them to the fleet dashboard.
+    </p>
+    <form method="post" action="{% url 'run_batch' %}" enctype="multipart/form-data">
+        <label for="plant_id">Plant ID</label>
+        <input type="text" id="plant_id" name="plant_id" placeholder="e.g. 4135001" required>
+
+        <label for="generation_csv">Generation data CSV</label>
+        <input type="file" id="generation_csv" name="generation_csv" accept=".csv" required>
+
+        <label for="weather_csv">Weather sensor data CSV</label>
+        <input type="file" id="weather_csv" name="weather_csv" accept=".csv" required>
+
+        <button type="submit">Run batch pipeline</button>
+    </form>
+
+    <h3>Recent model runs</h3>
+    {% if recent_runs %}
+    <table>
+        <thead><tr><th>Name</th><th>Created at</th></tr></thead>
+        <tbody>
+            {% for run in recent_runs %}
+            <tr><td>{{ run.name }}</td><td>{{ run.created_at }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No model runs yet.</p>
+    {% endif %}
+</details>
+
 {% endblock %}
