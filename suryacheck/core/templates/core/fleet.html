@@ -13,6 +13,13 @@
 </p>
 {% endif %}
 
+{% if alerts %}
+<p class="headline-stat">
+    &#8377;{{ total_rupees_at_risk|floatformat:0 }} at risk this week across {{ inverters_flagged }} inverter{{ inverters_flagged|pluralize }}
+    ({{ total_kwh_at_risk|floatformat:0 }} kWh of expected generation not delivered).
+</p>
+{% endif %}
+
 <form method="get" class="tariff-form">
     <label for="tariff">Assumption: default &#8377;{{ default_tariff }}/kWh - edit to recompute</label>
     <input type="number" id="tariff" name="tariff" step="0.5" value="{{ tariff }}">

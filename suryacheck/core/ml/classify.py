@@ -5,6 +5,20 @@ from sklearn.metrics import confusion_matrix
 FAULT_TO_LABEL = {"soiling": "dust", "step": "fault", "outage": "outage"}
 LABELS = ["dust", "fault", "outage", "normal"]
 WINDOW_LEN = 6
+FEATURE_NAMES = ["ratio_slope", "max_single_day_drop", "frac_zero_output", "clipping_score"]
+
+
+def _clipping_score(raw_rows):
+    if len(raw_rows) < 2:
+        return 0.0
+    power = raw_rows["AC_POWER"].to_numpy()
+    irradiation = raw_rows["IRRADIATION"].to_numpy()
+    power_mean, irr_mean = power.mean(), irradiation.mean()
+    if power_mean < 1e-6 or irr_mean < 1e-6:
+        return 0.0
+    power_cv = power.std() / power_mean
+    irr_cv = irradiation.std() / irr_mean
+    return float(irr_cv / (power_cv + 1e-3))
 
 
 def window_features(daily_ratio_df, raw_df, inverter_id, start_day, window_len=WINDOW_LEN):
@@ -22,8 +36,9 @@ def window_features(daily_ratio_df, raw_df, inverter_id, start_day, window_len=W
 
     raw_rows = raw_df[(raw_df["INVERTER_ID"] == inverter_id) & (raw_df["DAY_INDEX"].isin(days))]
     frac_zero = float((raw_rows["AC_POWER"] < 1e-6).mean()) if len(raw_rows) > 0 else 0.0
+    clipping_score = _clipping_score(raw_rows)
 
-    return [slope, max_drop, frac_zero]
+    return [slope, max_drop, frac_zero, clipping_score]
 
 
 def build_training_set(daily_ratio_df, raw_df, fault_windows, normal_windows, window_len=WINDOW_LEN):

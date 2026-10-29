@@ -144,3 +144,13 @@ form button:hover {
     font-size: 13px;
     color: #555;
 }
+
+.headline-stat {
+    font-size: 22px;
+    font-weight: bold;
+    background: #16233E;
+    color: #F2A623;
+    padding: 14px 20px;
+    border-radius: 6px;
+    margin: 16px 0;
+}

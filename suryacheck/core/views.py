@@ -194,12 +194,18 @@ def fleet_dashboard(request):
         alert.display_rupees_lost = alert.energy_deficit_kwh * tariff
     alerts.sort(key=lambda a: a.display_rupees_lost, reverse=True)
 
+    total_rupees_at_risk = sum(a.display_rupees_lost for a in alerts)
+    total_kwh_at_risk = sum(a.energy_deficit_kwh for a in alerts)
+
     context = {
         "alerts": alerts,
         "tariff": tariff,
         "default_tariff": settings.DEFAULT_TARIFF_PER_KWH,
         "ran": ran,
         "artifacts_ready": registry.artifacts_ready(),
+        "total_rupees_at_risk": total_rupees_at_risk,
+        "total_kwh_at_risk": total_kwh_at_risk,
+        "inverters_flagged": len(alerts),
     }
     return render(request, "core/fleet.html", context)
 

@@ -125,6 +125,12 @@ class Command(BaseCommand):
             "test": test_detect_metrics,
         }
 
+        self.stdout.write("Ablation: re-running detection with a rule-based (B2) expected-power baseline...")
+        results["ablation_rule_based_vs_ml"] = self._rule_based_ablation(
+            val_faulted, test_faulted, val_fault_windows, test_fault_windows,
+            k_dict, gamma_dict, best_n, best_t, val_detect_metrics, test_detect_metrics,
+        )
+
         self.stdout.write("Training cause classifier on validation faults, testing on test faults...")
         val_normal = self._normal_windows(val_seen, val_fault_windows, settings.RANDOM_SEED)
         test_normal = self._normal_windows(test_for_faults, test_fault_windows, settings.RANDOM_SEED + 1)
@@ -185,6 +191,41 @@ class Command(BaseCommand):
             )
             n_alerts += 1
         return n_alerts
+
+    def _rule_based_ablation(self, val_faulted, test_faulted, val_fault_windows, test_fault_windows,
+                              k_dict, gamma_dict, ml_n, ml_t, ml_val_metrics, ml_test_metrics):
+        val_rb = val_faulted.copy()
+        val_rb["PRED"] = baselines.predict_b2(val_rb, k_dict, gamma_dict)
+        test_rb = test_faulted.copy()
+        test_rb["PRED"] = baselines.predict_b2(test_rb, k_dict, gamma_dict)
+
+        val_ratio_rb = detect.daily_ratio_table(val_rb)
+        test_ratio_rb = detect.daily_ratio_table(test_rb)
+
+        rb_n, rb_t, rb_val_metrics = detect.tune_threshold(val_ratio_rb, val_fault_windows)
+        rb_test_flagged = detect.flag_inverters(test_ratio_rb, rb_n, rb_t)
+        rb_test_metrics = detect.score_detection(rb_test_flagged, test_fault_windows)
+
+        return {
+            "description": (
+                "Detection re-run on the identical injected faults using B2 (irradiance rule + "
+                "temperature derating) as the 'expected power' baseline, matching the physics-model "
+                "approach of US20160190984A1 claim 3, instead of the tuned ML model (M1+cal). Each "
+                "baseline gets its own independently tuned N-consecutive-days/ratio-threshold."
+            ),
+            "rule_based_b2": {
+                "n_consecutive_days": rb_n,
+                "ratio_threshold": rb_t,
+                "validation": rb_val_metrics,
+                "test": rb_test_metrics,
+            },
+            "ml_m1_cal": {
+                "n_consecutive_days": ml_n,
+                "ratio_threshold": ml_t,
+                "validation": ml_val_metrics,
+                "test": ml_test_metrics,
+            },
+        }
 
     def _inject_many(self, df, day_range, seed, n_per_type=5):
         rng = np.random.default_rng(seed)
