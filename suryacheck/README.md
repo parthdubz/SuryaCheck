@@ -10,6 +10,21 @@ This is a student prototype built for a course project (FAI CA2), trained on the
 public Kaggle "Solar Power Generation" dataset (two plants, 34 days of 15-minute
 data). It is not a production monitoring tool — see "Known limitations" below.
 
+## Project documentation
+
+This README covers setup and how to run the pipeline. For everything else:
+
+- **[docs/SOLUTION_EXPLAINED.md](docs/SOLUTION_EXPLAINED.md)** — the full
+  technical walkthrough for teammates: the data, every model (B0–B2, M1,
+  M1+cal) explained from first principles with real measured numbers,
+  LightGBM/Optuna tuning, synthetic fault injection, detection tuning, the
+  cause classifier, the Django architecture, and a complete ML glossary.
+- **[docs/NOVELTY.md](docs/NOVELTY.md)** — an honest prior-art comparison
+  against the closest patent we found (US20160190984A1), what SuryaCheck
+  actually extends vs. what's already prior art, and the concrete changes
+  made in response (a measured ML-vs-rule-based ablation, a feedback-to-labels
+  pipeline, and more).
+
 ## 1. Setup
 
 Requirements:
@@ -77,7 +92,14 @@ previous one:
   M1+cal) on the test split, on inverters the model never saw during training,
   and on a cross-plant scenario (train on Plant 1, test on Plant 2). It then
   injects synthetic faults into held-out days, tunes a fault-detection threshold,
-  trains a cause classifier, and writes everything to `artifacts/results.json`.
+  trains a cause classifier, runs an ML-vs-rule-based detection ablation (see
+  `docs/NOVELTY.md`), writes everything to `artifacts/results.json`, and
+  populates the fleet dashboard with real (unfaulted) test-period alerts.
+- **`export_feedback_labels`** - optional, run any time after the app has been
+  used. Exports every Alert and any installer feedback (dismiss + reason) as
+  `artifacts/feedback_labels.csv`. This is how real installer feedback could
+  eventually become real training labels, instead of relying on synthetic
+  faults forever - see "Known limitations".
 
 **`run.bat` vs `retrain.bat`**:
 - `run.bat` only runs `prepare_data` / `train_models` / `evaluate` the *first*
@@ -198,21 +220,31 @@ The model's real feature set is `IRRADIATION`, `MODULE_TEMPERATURE`,
 
 ## 6. 3-minute demo walkthrough (for judges)
 
-1. **Home / Fleet dashboard** - open `http://127.0.0.1:8000/`. Show the ranked
-   list of inverters, sorted by estimated rupees lost to underperformance. No
-   data upload needed - it's already using the Kaggle data baked into
-   `artifacts/`.
-2. **Inverter detail** - click into one of the flagged inverters near the top
+1. **Home** - open `http://127.0.0.1:8000/`. It's a real landing page, not a
+   bare dashboard: a one-line pitch, a "how it works" 3-step explainer, and two
+   entry points - "I'm a technician" (goes to the ranked fleet worklist) and
+   "I'm a plant owner" (picks one inverter from a dropdown and jumps straight
+   to its health page). Point out that this is deliberate: a tool is only
+   useful if a non-technical user can tell what to click first.
+2. **Fleet Dashboard** - the ranked worklist, sorted by estimated rupees lost
+   to underperformance, with a headline "₹X at risk this week" stat and an
+   editable tariff assumption. Inverters are shown with friendly names
+   ("Plant 1 - Inverter 03"), not raw hardware IDs. No data upload needed -
+   it's already using the Kaggle data baked into `artifacts/`.
+3. **Inverter detail** - click into one of the flagged inverters near the top
    of the list. Show its chart: actual output vs. the model's expected output,
-   with a confidence band around the prediction.
-3. **"Break it live"** - go to the fault-injection page, pick a currently
+   with a confidence band, explained in plain language above the chart.
+4. **"Break it live"** - go to the fault-injection page, pick a currently
    healthy inverter, and inject a synthetic fault (e.g. a sudden output drop or
    gradual soiling). Show that after the injection it gets caught by the
-   detection logic and climbs the ranked list.
-4. **Results page** - open the results/metrics page and show the actual numbers
+   detection logic and climbs the ranked list. Point out this reuses the exact
+   same `inject.py`/`detect.py` code path as `evaluate.py`, not a separate demo
+   path.
+5. **Results page** - open the results/metrics page and show the actual numbers
    from `artifacts/results.json` (model comparison, detection precision/recall,
-   cause-classifier accuracy) rendered in the UI.
-5. **Limits page** - briefly point at the limitations page so judges see that
+   cause-classifier accuracy, and the ML-vs-rule-based ablation) rendered in
+   the UI.
+6. **Limits page** - briefly point at the limitations page so judges see that
    the team is aware of the dataset's constraints (see section 7 below) rather
    than overselling the prototype.
 
@@ -258,3 +290,4 @@ Use this to confirm the whole pipeline actually worked, end to end:
 | Open "Break it live" page | Navigate to the fault-injection page | The page loads, lets you pick an inverter and a fault type, and running it visibly changes that inverter's status/rank. |
 | Open Results page | Navigate to the results/metrics page | The page shows numbers matching what's in `artifacts/results.json` (model comparison table, detection precision/recall, classifier accuracy). |
 | Open Limits page | Navigate to the limitations page | The page loads and lists the known limitations (matching section 7 above). |
+| Export feedback labels | `python manage.py export_feedback_labels` | Command prints how many rows it wrote; `artifacts/feedback_labels.csv` now exists with one row per Alert (plus installer feedback, if any has been given via the dismiss button). |
