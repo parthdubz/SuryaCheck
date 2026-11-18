@@ -356,8 +356,11 @@ Once something is flagged, we want a guess at *why*. This is
 **Features** computed per flagged window (`core/ml/classify.py::window_features`):
 slope of the daily ratio over the window (a steady decline looks like dust),
 the single biggest day-to-day drop in ratio (a sudden drop looks like a step
-fault), and the fraction of daylight time-slots with zero output (a long zero
-streak looks like an outage).
+fault), the fraction of daylight time-slots with zero output (a long zero
+streak looks like an outage), and a **clipping score** (power staying flat
+while irradiation keeps varying — the same signal US20160190984A1 uses as a
+hardcoded rule; here it's just one more input the Random Forest learns to
+weigh, see `docs/NOVELTY.md`).
 
 A **Random Forest** is an ensemble of many decision trees (Section 7
 explained a single tree), each trained on a random subset of the training
@@ -367,22 +370,22 @@ tree sees makes the ensemble much less likely to overfit than any single tree
 would be.
 
 **Actual result** — trained on validation faults, tested on test-period faults,
-accuracy **0.48** (48%):
+accuracy **0.60** (60%):
 
 Confusion matrix (rows = true label, columns = predicted; order:
 dust, fault, normal, outage):
 
 | true \\ predicted | dust | fault | normal | outage |
 |---|---|---|---|---|
-| **dust** | 0 | 4 | 1 | 0 |
-| **fault** | 0 | 1 | 4 | 0 |
-| **normal** | 0 | 1 | 9 | 0 |
-| **outage** | 0 | 1 | 2 | **2** |
+| **dust** | 2 | 1 | 2 | 0 |
+| **fault** | 1 | 0 | 4 | 0 |
+| **normal** | 0 | 0 | 10 | 0 |
+| **outage** | 0 | 0 | 2 | **3** |
 
-This is a genuinely weak classifier — it never once correctly identifies
-"dust," and "normal" soaks up a lot of the confusion. Reported honestly, not
-spun: with ~15 training examples per class, there simply isn't enough data for
-a 4-class classifier to learn reliable patterns yet. The *process* (train on
+Still a weak classifier — "fault" is never once correctly identified, and
+"normal" still soaks up a lot of the confusion. Reported honestly, not spun:
+with ~15 training examples per class, there simply isn't enough data for a
+4-class classifier to learn reliable patterns yet. The *process* (train on
 validation faults, test on held-out test faults, report the real confusion
 matrix) is what's defensible here — not the current accuracy number.
 
