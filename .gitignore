@@ -22,6 +22,12 @@ suryacheck/artifacts/*
 # local Claude Code tooling config, not part of the project
 /.claude/
 
+# CONFIDENTIAL - patent prior-art research, not filed yet.
+# Public disclosure before filing can bar patent rights (no grace period in
+# most non-US jurisdictions). Do not remove this line or publish this file
+# until a patent application has been filed and counsel confirms it's safe.
+suryacheck/docs/PATENT_PRIOR_ART_CONFIDENTIAL.md
+
 # editor/OS cruft
 .DS_Store
 Thumbs.db
